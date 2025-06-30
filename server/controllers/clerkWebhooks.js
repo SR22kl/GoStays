@@ -23,7 +23,7 @@ const clerkWebhooks = async (req, res) => {
       _id: data.id,
       email: data.email_addresses[0].email_address,
       username: `${data.first_name || ""} ${data.last_name || ""}`.trim(),
-      imageUrl: data.image_url,
+      image: data.image_url,
     };
 
     //Switch cases for different events
