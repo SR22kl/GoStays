@@ -4,6 +4,7 @@ import {
   createBooking,
   getHotelBookingsDetails,
   getUserBookings,
+  stripePayment,
 } from "../controllers/bookingController.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
 
@@ -20,5 +21,8 @@ bookingRouter.get("/user", authMiddleware, getUserBookings);
 
 //Get all hotel bookings dashboard data:- /api/bookings/hotel
 bookingRouter.get("/hotel", authMiddleware, getHotelBookingsDetails);
+
+//Stripe payment route:- /api/bookings/stripe-payment
+bookingRouter.post("/stripe-payment", authMiddleware, stripePayment);
 
 export default bookingRouter;

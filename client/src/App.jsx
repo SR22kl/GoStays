@@ -13,6 +13,7 @@ import MyBookings from "./pages/MyBookings";
 import RoomDetails from "./pages/RoomDetails";
 import { useAppContext } from "./context/AppContext";
 import AuthPage from "./pages/AuthPage";
+import Loader from "./components/Loader";
 
 const App = () => {
   const isOwnerPath = useLocation().pathname.includes("owner");
@@ -30,6 +31,7 @@ const App = () => {
             <Route path="/rooms" element={<AllRooms />} />
             <Route path="/rooms/:id" element={<RoomDetails />} />
             <Route path="/my-bookings" element={<MyBookings />} />
+            <Route path="/loader/:nextUrl" element={<Loader />} />
 
             {/* Routes for Clerk's auth UI*/}
             <Route path="/sign-in/*" element={<AuthPage />} />

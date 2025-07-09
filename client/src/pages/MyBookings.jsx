@@ -26,6 +26,30 @@ const MyBookings = () => {
     }
   };
 
+  const handlePyament = async (bookingId) => {
+    try {
+      const token = await getToken();
+      const { data } = await axios.post(
+        `/api/bookings/stripe-payment`,
+        {
+          bookingId,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (data.success) {
+        window.location.href = data.url; //data.url is the Stripe checkout URL
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
   // Fetch user bookings on component mount
   useState(() => {
     if (user) {
@@ -119,7 +143,10 @@ const MyBookings = () => {
                   </p>
                 </div>
                 {!booking?.isPaid && (
-                  <button className="px-4 py-2 mt-4 text-xs border border-gray-400 rounded-full shadow hover:bg-gray-50 transition-all cursor-pointer">
+                  <button
+                    onClick={() => handlePyament(booking._id)}
+                    className="px-4 py-2 mt-4 text-xs border border-gray-400 rounded-full shadow hover:bg-gray-50 transition-all cursor-pointer"
+                  >
                     Pay Now!
                   </button>
                 )}
