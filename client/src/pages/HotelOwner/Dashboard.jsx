@@ -1,9 +1,42 @@
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import { assets } from "../../assets/assets";
 import Title from "../../components/Title";
-import { assets, dashboardDummyData } from "../../assets/assets";
+import { useAppContext } from "../../context/AppContext";
 
 const Dashboard = () => {
-  const [dasboardData, setDashboardData] = useState(dashboardDummyData);
+  const { currency, user, getToken, axios } = useAppContext();
+  const [dasboardData, setDashboardData] = useState({
+    bookings: [],
+    totalBookings: 0,
+    totalRevenue: 0,
+  });
+
+  const fetchDasboardData = async () => {
+    try {
+      const token = await getToken();
+      const { data } = await axios.get("/api/bookings/hotel", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (data.success) {
+        setDashboardData(data.dashboardData);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
+  console.log(dasboardData);
+
+  useEffect(() => {
+    if (user) {
+      fetchDasboardData();
+    }
+  }, [user]);
 
   return (
     <>
@@ -27,7 +60,7 @@ const Dashboard = () => {
             <div className="flex flex-col ml-4 font-medium text-center">
               <p className="text-indigo-500 text-lg">Total Bookings</p>
               <p className="text-neutral-400 text-base">
-                {dasboardData?.totalBookings}
+                {dasboardData?.totalBookings || 0}
               </p>
             </div>
           </div>
@@ -41,7 +74,7 @@ const Dashboard = () => {
             <div className="flex flex-col ml-4 font-medium text-center">
               <p className="text-indigo-500 text-lg">Total Revenue</p>
               <p className="text-neutral-400 text-base">
-                $ {dasboardData?.totalRevenue}
+                {currency} {dasboardData?.totalRevenue || 0}
               </p>
             </div>
           </div>
@@ -81,7 +114,7 @@ const Dashboard = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200 text-sm">
-              {dasboardData.bookings.map((item, index) => (
+              {dasboardData?.bookings?.map((item, index) => (
                 <tr key={index}>
                   <td className="py-3 px-4 whitespace-nowrap">
                     <div className="flex items-center gap-2">
@@ -101,7 +134,7 @@ const Dashboard = () => {
                     {item.room?.roomType || "N/A"}
                   </td>
                   <td className="py-3 px-4 text-gray-700 whitespace-nowrap text-center sm:table-cell hidden">
-                    {item.totalPrice ? `$${item.totalPrice.toFixed(2)}` : "N/A"}
+                    {item.totalPrice ? `${currency}${item.totalPrice.toFixed(2)}` : "N/A"}
                   </td>
                   <td className="py-3 px-4 whitespace-nowrap text-center">
                     <button

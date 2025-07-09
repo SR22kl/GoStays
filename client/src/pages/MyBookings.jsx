@@ -1,9 +1,37 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import { assets } from "../assets/assets";
 import Title from "../components/Title";
-import { assets, userBookingsDummyData } from "../assets/assets";
+import { useAppContext } from "../context/AppContext";
+import { toast } from "react-toastify";
 
 const MyBookings = () => {
-  const [bookings, setBookings] = useState(userBookingsDummyData);
+  const { axios, getToken, user } = useAppContext();
+  const [bookings, setBookings] = useState([]);
+
+  const fetchUserBookings = async () => {
+    try {
+      const token = await getToken();
+      const { data } = await axios.get("/api/bookings/user", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (data.success) {
+        setBookings(data.bookings);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
+  // Fetch user bookings on component mount
+  useState(() => {
+    if (user) {
+      fetchUserBookings();
+    }
+  }, [user]);
 
   return (
     <>

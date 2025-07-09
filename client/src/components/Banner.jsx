@@ -1,6 +1,47 @@
+import { useState } from "react";
 import { assets, cities } from "../assets/assets";
+import { useAppContext } from "../context/AppContext";
+import { useNavigate } from "react-router-dom";
 
 const Banner = () => {
+  const [destination, setDestination] = useState("");
+  const navigate = useNavigate();
+  const { axios, getToken, setSearchedCities } = useAppContext();
+
+  const onSearch = async (e) => {
+    e.preventDefault();
+    navigate(`/rooms?destination=${destination}`);
+
+    // console.log("Banner: value of 'destination' state:", destination);
+
+    //Call api to save recent searched city
+    const token = await getToken();
+    await axios.post(
+      "/api/user/store-recent-search",
+      {
+        recentSearchedCities: destination,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    //Add destination to searchedCities max 3 recent searched cities
+    setSearchedCities((prevSearchedCities) => {
+      const updatedSearchedCities = [...prevSearchedCities, destination];
+      if (updatedSearchedCities.length > 3) {
+        updatedSearchedCities.shift(); // Remove the oldest city if more than 3
+      }
+      // console.log(
+      //   "Banner: updated searchedCities in context:",
+      //   updatedSearchedCities
+      // );
+      return updatedSearchedCities;
+    });
+  };
+
   return (
     <>
       <div className="flex flex-col items-start justify-center px-6 md:px-16 lg:px-24 xl:px-32 text-white bg-[url('/bg.jpg')] bg-no-repeat bg-cover bg-center h-screen">
@@ -14,13 +55,18 @@ const Banner = () => {
           Unparalleled luxury & comfort await at the world's most exclusive
           hotels & resorts. Start lyour journey today.
         </p>
-        <form className="bg-white text-gray-500 rounded-lg px-6 py-4  flex flex-col md:flex-row max-md:items-start gap-4 max-md:mx-auto mt-8 opacity-90">
+        <form
+          onSubmit={onSearch}
+          className="bg-white text-gray-500 rounded-lg px-6 py-4  flex flex-col md:flex-row max-md:items-start gap-4 max-md:mx-auto mt-8 opacity-90"
+        >
           <div>
             <div className="flex items-center gap-2">
               <img className="h-4" src={assets.calenderIcon} alt="calIcon" />
               <label htmlFor="destinationInput">Destination</label>
             </div>
             <input
+              onChange={(e) => setDestination(e.target.value)}
+              value={destination}
               list="destinations"
               id="destinationInput"
               type="text"
@@ -72,7 +118,7 @@ const Banner = () => {
           </div>
 
           <button className="flex items-center justify-center gap-1 rounded-md bg-black py-3 px-4 text-white my-auto cursor-pointer max-md:w-full max-md:py-1 opacity-90">
-            <img src={assets.searchIcon} alt="searchIcon" className="h-7"/>
+            <img src={assets.searchIcon} alt="searchIcon" className="h-7" />
             <span>Search</span>
           </button>
         </form>

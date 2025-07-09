@@ -1,7 +1,8 @@
+import { useAuth, useClerk, UserButton } from "@clerk/clerk-react"; // Import useAuth
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { assets } from "../assets/assets.js";
-import { useClerk, useUser, UserButton } from "@clerk/clerk-react";
+import { useAppContext } from "../context/AppContext.jsx";
 
 const BookIcon = () => (
   <svg
@@ -22,6 +23,7 @@ const BookIcon = () => (
     />
   </svg>
 );
+
 const Navbar = () => {
   const navLinks = [
     { name: "Home", path: "/" },
@@ -34,10 +36,12 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const { openSignIn } = useClerk();
-  const { user } = useUser();
+  const { isSignedIn, isLoaded } = useAuth(); 
 
   const navigate = useNavigate();
   const location = useLocation();
+
+  const { user, isOwner, setShowHotelReg } = useAppContext(); 
 
   useEffect(() => {
     if (location.pathname !== "/") {
@@ -46,7 +50,7 @@ const Navbar = () => {
     } else {
       setIsScrolled(false);
     }
-    setIsScrolled((prev) => (location.pathname !== "/" ? true : prev));
+
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
     };
@@ -56,7 +60,7 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`fixed top-0 left-0  w-full flex items-center justify-between px-4 md:px-16 lg:px-24 xl:px-32 transition-all duration-500 z-50 ${
+      className={`fixed top-0 left-0 w-full flex items-center justify-between px-4 md:px-16 lg:px-24 xl:px-32 transition-all duration-500 z-50 ${
         isScrolled
           ? "bg-white/80 shadow-md text-gray-700 backdrop-blur-lg py-3 md:py-4"
           : "py-4 md:py-6"
@@ -89,14 +93,20 @@ const Navbar = () => {
             />
           </a>
         ))}
-        <button
-          onClick={() => navigate("/owner")}
-          className={`border px-4 py-1 text-sm font-light rounded-full cursor-pointer ${
-            isScrolled ? "text-black" : "text-white"
-          } transition-all`}
-        >
-          Dashboard
-        </button>
+        {/* Use isSignedIn for conditional rendering here */}
+        {isLoaded &&
+          isSignedIn && ( // Only show if Clerk is loaded and user is signed in
+            <button
+              onClick={() =>
+                isOwner ? navigate("/owner") : setShowHotelReg(true)
+              }
+              className={`border px-4 py-1 text-sm font-light rounded-full cursor-pointer ${
+                isScrolled ? "text-black" : "text-white"
+              } transition-all`}
+            >
+              {isOwner ? "Dashboard" : "List Your Hotel"}
+            </button>
+          )}
       </div>
 
       {/* Desktop Right */}
@@ -108,39 +118,45 @@ const Navbar = () => {
             isScrolled && "invert text-base "
           }h-7 cursor-pointer transition-all duration-500 `}
         />
-        {user ? (
-          <UserButton>
-            <UserButton.MenuItems>
-              <UserButton.Action
-                label="My Bookings"
-                labelIcon={<BookIcon />}
-                onClick={() => navigate("/my-bookings")}
-              />
-            </UserButton.MenuItems>
-          </UserButton>
+        {/* Use isSignedIn for conditional rendering here */}
+        {isLoaded ? ( // Check if Clerk is loaded before rendering auth buttons
+          isSignedIn ? ( // If signed in, show UserButton
+            <UserButton>
+              <UserButton.MenuItems>
+                <UserButton.Action
+                  label="My Bookings"
+                  labelIcon={<BookIcon />}
+                  onClick={() => navigate("/my-bookings")}
+                />
+              </UserButton.MenuItems>
+            </UserButton>
+          ) : (
+            <button
+              onClick={openSignIn}
+              className="bg-black text-white px-8 py-2.5 rounded-full ml-4 transition-all duration-500 cursor-pointer"
+            >
+              Login
+            </button>
+          )
         ) : (
-          <button
-            onClick={openSignIn}
-            className="bg-black text-white px-8 py-2.5 rounded-full ml-4 transition-all duration-500 cursor-pointer"
-          >
-            Login
-          </button>
+          <div className="w-24 h-10 bg-gray-200 rounded-full animate-pulse"></div>
         )}
       </div>
 
       {/* Mobile Menu Button */}
       <div className="flex items-center gap-3 md:hidden">
-        {user && (
-          <UserButton>
-            <UserButton.MenuItems>
-              <UserButton.Action
-                label="My Bookings"
-                labelIcon={<BookIcon />}
-                onClick={() => navigate("/my-bookings")}
-              />
-            </UserButton.MenuItems>
-          </UserButton>
-        )}
+        {isLoaded &&
+          isSignedIn && ( 
+            <UserButton>
+              <UserButton.MenuItems>
+                <UserButton.Action
+                  label="My Bookings"
+                  labelIcon={<BookIcon />}
+                  onClick={() => navigate("/my-bookings")}
+                />
+              </UserButton.MenuItems>
+            </UserButton>
+          )}
         <img
           src={assets.menuIcon}
           alt="menuIcon"
@@ -172,23 +188,27 @@ const Navbar = () => {
           </a>
         ))}
 
-        {user && (
-          <button
-            onClick={() => navigate("/owner")}
-            className="border px-4 py-1 text-sm font-light rounded-full cursor-pointer transition-all"
-          >
-            Dashboard
-          </button>
-        )}
+        {isLoaded &&
+          isSignedIn && ( 
+            <button
+              onClick={() =>
+                isOwner ? navigate("/owner") : setShowHotelReg(true)
+              }
+              className="border px-4 py-1 text-sm font-light rounded-full cursor-pointer transition-all"
+            >
+              {isOwner ? "Dashboard" : "List Your Hotel"}
+            </button>
+          )}
 
-        {!user && (
-          <button
-            onClick={openSignIn}
-            className="bg-black text-white px-8 py-2.5 rounded-full transition-all duration-500 cursor-pointer"
-          >
-            Login
-          </button>
-        )}
+        {isLoaded &&
+          !isSignedIn && ( 
+            <button
+              onClick={openSignIn}
+              className="bg-black text-white px-8 py-2.5 rounded-full transition-all duration-500 cursor-pointer"
+            >
+              Login
+            </button>
+          )}
       </div>
     </nav>
   );
