@@ -20,9 +20,12 @@ export const AppProvider = ({ children }) => {
   const [searchedCities, setSearchedCities] = useState([]);
   const [rooms, setRooms] = useState([]);
 
+  const [loadingRooms, setLoadingRooms] = useState(false);
+
   // console.log(rooms)
 
   const fetchRooms = async () => {
+    setLoadingRooms(true);
     try {
       const { data } = await axios.get(`/api/rooms`);
       if (data.success) {
@@ -32,6 +35,8 @@ export const AppProvider = ({ children }) => {
       }
     } catch (error) {
       toast.error(error.message);
+    } finally {
+      setLoadingRooms(false);
     }
   };
 
@@ -77,7 +82,7 @@ export const AppProvider = ({ children }) => {
     if (user) {
       fetchUser();
     }
-  }, [user]);
+  }, [user, getToken]);
 
   useEffect(() => {
     fetchRooms();
@@ -96,6 +101,7 @@ export const AppProvider = ({ children }) => {
     setSearchedCities,
     rooms,
     setRooms,
+    loadingRooms,
   };
   return (
     <>
