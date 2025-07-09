@@ -179,7 +179,7 @@ export const stripePayment = async (req, res) => {
     const totalPrice = booking.totalPrice;
     const { origin } = req.headers; //FE URL
 
-    const stripeInstance = new stripe(process.env.TRIPE_SECRET_KEY);
+    const stripeInstance = new stripe(process.env.STRIPE_SECRET_KEY);
 
     const line_items = [
       {
