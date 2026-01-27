@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { assets } from "../assets/assets";
 import Title from "../components/Title";
 import { useAppContext } from "../context/AppContext";
@@ -38,7 +38,7 @@ const MyBookings = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
       if (data.success) {
         window.location.href = data.url; //data.url is the Stripe checkout URL
@@ -51,7 +51,7 @@ const MyBookings = () => {
   };
 
   // Fetch user bookings on component mount
-  useState(() => {
+  useEffect(() => {
     if (user) {
       fetchUserBookings();
     }

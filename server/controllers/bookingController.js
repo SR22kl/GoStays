@@ -93,8 +93,8 @@ export const createBooking = async (req, res) => {
         <li><strong>Location:</strong> ${roomData.hotel.address}</li>
         <li><strong>Date:</strong> ${booking.checkInDate.toDateString()}</li>
         <li><strong>Booking Amount:</strong> ${process.env.CURRENCY || "$"} ${
-        booking.totalPrice
-      }/Night</li>
+          booking.totalPrice
+        }/Night</li>
       <p>If you need to make any changes, feel free to cantact us.</p>
       <p>Best Regards,<br/>GoStays Team!</p>
       </ul>
@@ -141,18 +141,14 @@ export const getHotelBookingsDetails = async (req, res) => {
     const bookings = await Booking.find({ hotel: hotel._id })
       .populate("room hotel user")
       .sort({ createdAt: -1 });
-    res
-      .status(200)
-      .json({ success: true, message: "Hotel Bookings fetched", bookings });
 
     //Total Bookings
     const totalBookings = bookings.length;
 
     //Total Revenue
-    let totalRevenue = bookings.reduce(
-      (acc, booking) => acc + booking.totalPrice,
-      0
-    );
+    let totalRevenue = bookings
+      .filter((booking) => booking.isPaid)
+      .reduce((acc, booking) => acc + booking.totalPrice, 0);
 
     res.status(200).json({
       success: true,
