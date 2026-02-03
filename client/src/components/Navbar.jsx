@@ -68,12 +68,25 @@ const Navbar = () => {
     >
       {/* Logo */}
       <Link to={"/"}>
-        <div
-          className={`text-2xl font-bold transition-all duration-500 ${
-            isScrolled ? "text-gray-800" : "text-white"
-          }`}
-        >
-          Go<span className="text-blue-500">Stays</span>
+        <div className="flex items-center gap-2">
+          <svg
+            className={`w-7 h-7 transition-all duration-500 ${
+              isScrolled ? "text-blue-600" : "text-blue-400"
+            }`}
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path d="M11 3a1 1 0 0 1 1 1v8h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h7V4a1 1 0 0 1 1-1m0 2v8h-8v7h16v-7h-8V5h-8zm1 5a1 1 0 1 0-2 0 1 1 0 0 0 2 0m4 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0m-4 4a1 1 0 1 0-2 0 1 1 0 0 0 2 0m4 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0z" />
+          </svg>
+          <div
+            className={`text-2xl font-bold transition-all duration-500 ${
+              isScrolled ? "text-gray-800" : "text-white"
+            }`}
+          >
+            Go<span className="text-blue-500">Stays</span>
+          </div>
         </div>
       </Link>
 
