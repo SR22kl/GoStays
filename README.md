@@ -2,7 +2,7 @@
 
 A modern, full-stack hotel booking platform built with React, Express, and MongoDB. GoStays allows users to discover, book, and review hotels while providing hotel owners with a comprehensive dashboard to manage their properties.
 
-![GoStays Preview](./preview/screenshot2.png) <!-- Replace with actual screenshot -->
+![GoStays Preview](./preview/preview1.png) <!-- Replace with actual screenshot -->
 
 ## 🌐 Live Links
 
