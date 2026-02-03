@@ -36,12 +36,12 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const { openSignIn } = useClerk();
-  const { isSignedIn, isLoaded } = useAuth(); 
+  const { isSignedIn, isLoaded } = useAuth();
 
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { user, isOwner, setShowHotelReg } = useAppContext(); 
+  const { user, isOwner, setShowHotelReg } = useAppContext();
 
   useEffect(() => {
     if (location.pathname !== "/") {
@@ -68,11 +68,13 @@ const Navbar = () => {
     >
       {/* Logo */}
       <Link to={"/"}>
-        <img
-          src={assets.logo}
-          alt="logo"
-          className={`h-9 ${isScrolled && "invert opacity-80"}`}
-        />
+        <div
+          className={`text-2xl font-bold transition-all duration-500 ${
+            isScrolled ? "text-gray-800" : "text-white"
+          }`}
+        >
+          Go<span className="text-blue-500">Stays</span>
+        </div>
       </Link>
 
       {/* Desktop Nav */}
@@ -145,18 +147,17 @@ const Navbar = () => {
 
       {/* Mobile Menu Button */}
       <div className="flex items-center gap-3 md:hidden">
-        {isLoaded &&
-          isSignedIn && ( 
-            <UserButton>
-              <UserButton.MenuItems>
-                <UserButton.Action
-                  label="My Bookings"
-                  labelIcon={<BookIcon />}
-                  onClick={() => navigate("/my-bookings")}
-                />
-              </UserButton.MenuItems>
-            </UserButton>
-          )}
+        {isLoaded && isSignedIn && (
+          <UserButton>
+            <UserButton.MenuItems>
+              <UserButton.Action
+                label="My Bookings"
+                labelIcon={<BookIcon />}
+                onClick={() => navigate("/my-bookings")}
+              />
+            </UserButton.MenuItems>
+          </UserButton>
+        )}
         <img
           src={assets.menuIcon}
           alt="menuIcon"
@@ -188,27 +189,25 @@ const Navbar = () => {
           </a>
         ))}
 
-        {isLoaded &&
-          isSignedIn && ( 
-            <button
-              onClick={() =>
-                isOwner ? navigate("/owner") : setShowHotelReg(true)
-              }
-              className="border px-4 py-1 text-sm font-light rounded-full cursor-pointer transition-all"
-            >
-              {isOwner ? "Dashboard" : "List Your Hotel"}
-            </button>
-          )}
+        {isLoaded && isSignedIn && (
+          <button
+            onClick={() =>
+              isOwner ? navigate("/owner") : setShowHotelReg(true)
+            }
+            className="border px-4 py-1 text-sm font-light rounded-full cursor-pointer transition-all"
+          >
+            {isOwner ? "Dashboard" : "List Your Hotel"}
+          </button>
+        )}
 
-        {isLoaded &&
-          !isSignedIn && ( 
-            <button
-              onClick={openSignIn}
-              className="bg-black text-white px-8 py-2.5 rounded-full transition-all duration-500 cursor-pointer"
-            >
-              Login
-            </button>
-          )}
+        {isLoaded && !isSignedIn && (
+          <button
+            onClick={openSignIn}
+            className="bg-black text-white px-8 py-2.5 rounded-full transition-all duration-500 cursor-pointer"
+          >
+            Login
+          </button>
+        )}
       </div>
     </nav>
   );
