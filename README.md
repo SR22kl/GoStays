@@ -401,6 +401,8 @@ This project is licensed under the ISC License - see the package.json file for d
 
 ## 👨‍💻 Author
 
+- Sumit Rathod - [GitHub](https://github.com/SR22kl)
+
 Created for hotel booking enthusiasts
 
 ## 📧 Support
